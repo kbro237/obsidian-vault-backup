@@ -7,7 +7,7 @@
 
   <key>ProgramArguments</key>
   <array>
-    <string>/bin/bash</string>
+    <string>/opt/homebrew/bin/bash</string>
     <string>/Users/keith/Documents/Backup Misc/obsidian-vault-backup/obsidian_backup.sh</string>
   </array>
 
