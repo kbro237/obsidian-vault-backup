@@ -6,6 +6,12 @@ SOURCE="/Users/keith/Local/Obsidian/Notebook"
 DEST="/Users/keith/Documents/Backup Misc/obsidian-vault-backup"
 BASE_NAME="Notebook"
 
+# Use GNU tar on macOS (required for --listed-incremental)
+TAR="${TAR:-tar}"
+if [[ "$(uname)" == "Darwin" ]] && command -v gtar >/dev/null; then
+  TAR=gtar
+fi
+
 # Incremental backup support
 SNAR="$DEST/${BASE_NAME}.snar"
 TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
@@ -56,18 +62,18 @@ EXCLUDES=(
 )
 
 if command -v pigz >/dev/null && [ "$USE_PIGZ" -ne 0 ]; then
-  tar -cf - \
+  $TAR -cf - \
     -C "$(dirname "$SOURCE")" \
-    "${BASE_NAME}" \
     "${EXCLUDES[@]}" \
     --listed-incremental="$SNAR" \
+    "${BASE_NAME}" \
   | pigz -9 > "$BACKUP_FILE"
 else
-  tar -czf "$BACKUP_FILE" \
+  $TAR -czf "$BACKUP_FILE" \
     -C "$(dirname "$SOURCE")" \
-    "${BASE_NAME}" \
     "${EXCLUDES[@]}" \
-    --listed-incremental="$SNAR"
+    --listed-incremental="$SNAR" \
+    "${BASE_NAME}"
 fi
 
 # Backup succeeded — disable cleanup trap
